@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+import specialist.py
+
 bot = commands.Bot(command_prefix="!")
 
 # Setup listeners
@@ -12,6 +14,7 @@ async def on_message(message):
     print(f"<#{message.channel}> {message.author}: {message.content}") # Debugging
     await bot.process_commands(message) # Required or else it breaks with other commands
 
+# Just a test command
 @bot.command()
 async def smd(ctx):
     await ctx.send(f"go fuck yourself {ctx.author}")
