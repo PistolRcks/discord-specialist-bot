@@ -1,5 +1,6 @@
 from PIL import Image, ImageFont, ImageDraw
 import ffmpeg
+import math
 
 # Constant declarations
 SIZE = (400,400)
@@ -21,7 +22,7 @@ def createTextOverlay(topText, bottomText, fontSize=100):
     topSize = draw.textsize(topText, font=impact)
     if topSize[0] > SIZE[0] - BORDER_MARGINS[0]*2:
         # Good ol' algebra and cross-multiplication (basically the ratio between fontsize and textwidth should remain the same)
-        newFontSize = (fontSize * (SIZE[0] - BORDER_MARGINS[0])) / topSize[0]
+        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0])) / topSize[0])
         impact = ImageFont.truetype("impact.ttf", newFontSize)
         topSize = draw.textsize(topText, font=impact)
         print(newFontSize)
@@ -29,13 +30,13 @@ def createTextOverlay(topText, bottomText, fontSize=100):
     # Do the same for bottom text
     bottomSize = draw.textsize(bottomText, font=impact)
     if bottomSize[0] > SIZE[0] - BORDER_MARGINS[0]*2:
-        newFontSize = (fontSize * (SIZE[0] - BORDER_MARGINS[0])) / bottomSize[0]
+        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0])) / bottomSize[0])
         impact = ImageFont.truetype("impact.ttf", newFontSize)
         bottomSize = draw.textsize(bottomText, font=impact)
         print(newFontSize)
 
-    draw.text(BORDER_MARGINS, topText, font=impact)
-    draw.text((BORDER_MARGINS[0], SIZE[1] - BORDER_MARGINS[1] - bottomSize[1]), bottomText, font=impact)
+    draw.text((SIZE[0]/2 - topSize[0]/2, BORDER_MARGINS[1]), topText, font=impact)
+    draw.text((SIZE[0]/2 - bottomSize[0]/2, SIZE[1] - BORDER_MARGINS[1] - bottomSize[1]), bottomText, font=impact)
     image.show() # debugging
 
     return image.tobytes()
