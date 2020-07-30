@@ -18,10 +18,18 @@ async def on_ready():
 async def on_message(message):
     print(f"<#{message.channel}> {message.author}: {message.content}") # Debugging
 
+@bot.listen()
+async def on_command_error(ctx, error):
+	if type(error) == commands.errors.ExpectedClosingQuoteError:
+		await ctx.send(f"nice job with the quotation marks, {ctx.author.mention}")
+	else:
+		print(f"Error {type(error)} pushed!")
+	
+
 # Just a test command
 @bot.command()
 async def smd(ctx):
-    await ctx.send(f"go fuck yourself {ctx.author}")
+    await ctx.send(f"go fuck yourself {ctx.author.mention}")
 
 # Create impact font text on a blank background
 @bot.command()
