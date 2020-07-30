@@ -29,4 +29,4 @@ async def smd(ctx):
 
 
 try: bot.run(sys.argv[1]) # Start it UP
-except: print("Invalid bot secret! Please make sure you're using your correct secret, and use quotes if you have to.")
+except: print("Invalid bot token! Please make sure you're using the correct token, and use quotes if you have to.")
