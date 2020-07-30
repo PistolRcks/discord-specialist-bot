@@ -2,6 +2,7 @@ import sys
 from io import BytesIO
 import discord
 from discord.ext import commands
+from discord.errors import LoginFailure
 import specialist
 
 bot = commands.Bot(command_prefix="!")
@@ -14,7 +15,7 @@ async def on_ready():
 @bot.listen()
 async def on_message(message):
     print(f"<#{message.channel}> {message.author}: {message.content}") # Debugging
-    await bot.process_commands(message) # Required or else it breaks with other commands
+    #await bot.process_commands(message) # Required or else it breaks with other commands
 
 # Just a test command
 @bot.command()
@@ -29,4 +30,5 @@ async def smd(ctx):
 
 
 try: bot.run(sys.argv[1]) # Start it UP
-except: print("Invalid bot token! Please make sure you're using the correct token, and use quotes if you have to.")
+except LoginFailure: print("Invalid bot token!\nPlease make sure you're using the correct token, and use quotes if you have to.")
+except IndexError: print("Empty bot token!\nPlease make sure to enter in your bot token.")
