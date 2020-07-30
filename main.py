@@ -1,7 +1,8 @@
+import sys
+from io import BytesIO
 import discord
 from discord.ext import commands
 import specialist
-from io import BytesIO
 
 bot = commands.Bot(command_prefix="!")
 
@@ -27,4 +28,5 @@ async def smd(ctx):
 #    await ctx.send(file=discord.File(BytesIO(image), filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
 
 
-bot.run("NzM3MTEzNDI4OTI5MjgyMTQ4.Xx4oYA.AtT25O2ApCku4KvVteU1k_9cg1o") # Start it UP
+try: bot.run(sys.argv[1]) # Start it UP
+except: print("Invalid bot secret! Please make sure you're using your correct secret, and use quotes if you have to.")
