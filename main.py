@@ -1,8 +1,10 @@
 import sys
+import os
 from io import BytesIO
 import discord
 from discord.ext import commands
 from discord.errors import LoginFailure
+from PIL import Image
 import specialist
 
 bot = commands.Bot(command_prefix="!")
@@ -15,18 +17,29 @@ async def on_ready():
 @bot.listen()
 async def on_message(message):
     print(f"<#{message.channel}> {message.author}: {message.content}") # Debugging
-    #await bot.process_commands(message) # Required or else it breaks with other commands
 
 # Just a test command
 @bot.command()
 async def smd(ctx):
     await ctx.send(f"go fuck yourself {ctx.author}")
 
-# FIXME: Need a way to write all this image data to a file AFTER it has been changed into raw bytes
-#@bot.command()
-#async def impact(ctx, topText, bottomText):
-#    image = specialist.createTextOverlay(topText, bottomText, fontSize=25)
-#    await ctx.send(file=discord.File(BytesIO(image), filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
+# Create impact font text on a blank background
+@bot.command()
+async def impact(ctx, topText, bottomText):
+	# Make the image
+	rawImage = specialist.createTextOverlay(topText, bottomText, fontSize=25)
+	image = Image.frombytes("RGBA", specialist.SIZE, rawImage)
+	
+	# Save the image
+	print("Saving image...")
+	try:
+		image.save("img-tmp.png")
+		print("Image saved correctly. Posting...")
+		await ctx.send(file=discord.File("img-tmp.png", filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
+		os.remove("img-tmp.png")
+		print("Removed temporary file.")
+	except OSError:
+		print("Image failed to save, so not sent.") 
 
 
 try: bot.run(sys.argv[1]) # Start it UP

@@ -1,6 +1,6 @@
+import math
 from PIL import Image, ImageFont, ImageDraw
 import ffmpeg
-import math
 
 # Constant declarations
 SIZE = (400,400)
@@ -41,7 +41,7 @@ def createTextOverlay(topText, bottomText, fontSize=100):
 
     return image.tobytes()
 
-def renderVideo(textOverlay):
+def renderVideo(textOverlay, baseVideoFilepath):
     pass # TODO
 
 
