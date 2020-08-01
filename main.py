@@ -38,7 +38,7 @@ async def smd(ctx):
 async def impact(ctx, topText, bottomText):
 	# Make the image
 	rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
-	image = Image.frombytes("RGBA", specialist.SIZE, rawImage)
+	image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
 
 	# Save the image
 	print("Saving image...")
