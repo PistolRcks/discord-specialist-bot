@@ -37,6 +37,8 @@ async def smd(ctx):
 # Create impact font text on a blank background
 @bot.command()
 async def impact(ctx, topText, bottomText):
+    await ctx.send("Working...", delete_after=1)
+
 	# Make the image
 	rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
 	image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
@@ -55,6 +57,8 @@ async def impact(ctx, topText, bottomText):
 # Creates the specialist meme and then sends it
 @bot.command()
 async def specialist(ctx, topText, bottomText):
+    await ctx.send("Working...", delete_after=1)
+
     # Make sure it exists before screwing around
     if not os.path.exists("specialist.mp4"):
         print("Specialist not found! Make sure it's named `specialist.mp4`.")
@@ -82,13 +86,15 @@ async def specialist(ctx, topText, bottomText):
 # Adds impact font text to a Youtube video
 @bot.command()
 async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
+    await ctx.send("Working...", delete_after=1)
+
     # Cleanup from before if cleanup failed last time
     try:
         os.remove("ytdl-tmp.mp4")
         os.remove("overlain-tmp.mp4")
     except: pass
 
-    # All arguments come in as strings.
+    # All arguments come in as strings, so we'll need to change that
     startTime = float(startTime)
     endTime = float(endTime)
 
