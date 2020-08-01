@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord.errors import LoginFailure
 from PIL import Image
+import youtube_dl
 import rendering
 
 bot = commands.Bot(command_prefix="!")
@@ -76,6 +77,55 @@ async def specialist(ctx, topText, bottomText):
 
     # Cleanup
     try: os.remove("specialist-tmp.mp4")
+    except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
+
+# Adds impact font text to a Youtube video
+@bot.command()
+async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
+    # Cleanup from before if cleanup failed last time
+    try:
+        os.remove("ytdl-tmp.mp4")
+        os.remove("overlain-tmp.mp4")
+    except: pass
+
+    # All arguments come in as strings.
+    startTime = float(startTime)
+    endTime = float(endTime)
+
+    # Limit length
+    if endTime - startTime > 30:
+        await ctx.send(f"{ctx.author.mention} Clip length is greater than thirty seconds. Please make the clip shorter.")
+    elif endTime - startTime <= 0:
+        await ctx.send(f"{ctx.author.mention} Clip length is less than or equal to 0 seconds. Please extend the clip.")
+
+    # Download video
+    ytdlOptions = {
+        "format": "mp4",
+        "outtmpl": "ytdl-tmp.mp4" # Set the name of the file
+    }
+    with youtube_dl.YoutubeDL(ytdlOptions) as ytdl:
+        try: ytdl.download([link])
+        except:
+            await ctx.send(f"{ctx.author.mention} Link is incorrect. Please try another link.")
+            return 1
+
+    # Render
+    result = rendering.renderWithTextOverlay("ytdl-tmp.mp4", "overlain-tmp.mp4", \
+        rendering.createTextOverlay(topText, bottomText), \
+        startTime, endTime)
+
+    # Send it
+    if result == 0:
+        await ctx.send(file=discord.File("overlain-tmp.mp4", filename=f"funny_clip_meme_from_{ctx.author}.mp4"))
+    elif result == 1:
+        await ctx.send(f"{ctx.author.mention} Clip length exceeds length of video. Please adjust clip restraints.")
+    else:
+        await ctx.send(f"{ctx.author.mention} Clip failed to render. Please try again.")
+
+    # Cleanup
+    try:
+        os.remove("ytdl-tmp.mp4")
+        os.remove("overlain-tmp.mp4")
     except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 
