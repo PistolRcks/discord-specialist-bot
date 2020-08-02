@@ -39,20 +39,20 @@ async def smd(ctx):
 async def impact(ctx, topText, bottomText):
     await ctx.send("Working...", delete_after=1)
 
-	# Make the image
-	rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
-	image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
+    # Make the image
+    rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
+    image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
 
-	# Save the image
-	print("Saving image...")
-	try:
-		image.save("img-tmp.png")
-		print("Image saved correctly. Posting...")
-		await ctx.send(file=discord.File("img-tmp.png", filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
-		os.remove("img-tmp.png")
-		print("Removed temporary file.")
-	except OSError:
-		print("Image failed to save, so not sent.")
+    # Save the image
+    print("Saving image...")
+    try:
+       image.save("img-tmp.png")
+       print("Image saved correctly. Posting...")
+       await ctx.send(file=discord.File("img-tmp.png", filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
+       os.remove("img-tmp.png")
+       print("Removed temporary file.")
+    except OSError:
+        print("Image failed to save, so not sent.")
 
 # Creates the specialist meme and then sends it
 @bot.command()
