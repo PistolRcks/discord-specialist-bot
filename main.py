@@ -1,6 +1,7 @@
 import sys
 import os
 from io import BytesIO
+import re
 import discord
 from discord.ext import commands
 from discord.errors import LoginFailure
@@ -31,108 +32,116 @@ async def on_command_error(ctx, error):
 
 # Just a test command
 @bot.command()
-async def smd(ctx):
-    await ctx.send(f"go fuck yourself {ctx.author.mention}")
+async def smd(ctx, user="self"):
+    if user == "self": # If the user inputs nothing
+        user = ctx.author.mention
+    elif not re.match(r"<@", user): # If the user is not directly mentioned (with an @)
+        try:
+            user = [member.mention for member in ctx.guild.members \
+                if member.name == re.sub(r"(?=#).+$", "", user) \
+                and member.discriminator == re.sub(r"^.+(?<=#)", "", user)][0]
+        except:
+            ctx.send("Could not find user! Try again.")
+            return 1
+    await ctx.send(f"go fuck yourself {user}")
 
 # Create impact font text on a blank background
 @bot.command()
 async def impact(ctx, topText, bottomText):
-    await ctx.send("Working...", delete_after=1)
+    async with ctx.typing(): # Working indicator
+        # Make the image
+        rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
+        image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
 
-    # Make the image
-    rawImage = rendering.createTextOverlay(topText, bottomText, fontSize=25)
-    image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
-
-    # Save the image
-    print("Saving image...")
-    try:
-       image.save("img-tmp.png")
-       print("Image saved correctly. Posting...")
-       await ctx.send(file=discord.File("img-tmp.png", filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
-       os.remove("img-tmp.png")
-       print("Removed temporary file.")
-    except OSError:
-        print("Image failed to save, so not sent.")
+        # Save the image
+        print("Saving image...")
+        try:
+            image.save("img-tmp.png")
+            print("Image saved correctly. Posting...")
+            await ctx.send(file=discord.File("img-tmp.png", filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
+            os.remove("img-tmp.png")
+            print("Removed temporary file.")
+        except OSError:
+            print("Image failed to save, so not sent.")
 
 # Creates the specialist meme and then sends it
 @bot.command()
 async def specialist(ctx, topText, bottomText):
-    await ctx.send("Working...", delete_after=1)
+    async with ctx.typing(): # Working indicator
+        # Make sure it exists before screwing around
+        if not os.path.exists("specialist.mp4"):
+            print("Specialist not found! Make sure it's named `specialist.mp4`.")
+            pass
+        # Cleanup if command failed last time
+        try: os.remove("specialist-tmp.mp4")
+        except: pass
 
-    # Make sure it exists before screwing around
-    if not os.path.exists("specialist.mp4"):
-        print("Specialist not found! Make sure it's named `specialist.mp4`.")
-        pass
-    # Cleanup if command failed last time
-    try: os.remove("specialist-tmp.mp4")
-    except: pass
+        # Render it
+        result = rendering.renderWithTextOverlay("specialist.mp4", "specialist-tmp.mp4", \
+            rendering.createTextOverlay(topText, bottomText), \
+            14, 25)
 
-    # Render it
-    result = rendering.renderWithTextOverlay("specialist.mp4", "specialist-tmp.mp4", \
-        rendering.createTextOverlay(topText, bottomText), \
-        14, 25)
+        # Send it
+        if result == 0:
+            await ctx.send(file=discord.File("specialist-tmp.mp4", filename=f"funny_specialist_meme_from_{ctx.author}.mp4"))
+        else:
+            print("Render failed, so not sending.")
+            await ctx.send("Render failed. Please try again.")
 
-    # Send it
-    if result == 0:
-        await ctx.send(file=discord.File("specialist-tmp.mp4", filename=f"funny_specialist_meme_from_{ctx.author}.mp4"))
-    else:
-        print("Render failed, so not sending.")
-        await ctx.send("Render failed. Please try again.")
-
-    # Cleanup
-    try: os.remove("specialist-tmp.mp4")
-    except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
+        # Cleanup
+        try: os.remove("specialist-tmp.mp4")
+        except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 # Adds impact font text to a Youtube video
 @bot.command()
 async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
-    await ctx.send("Working...", delete_after=1)
+    async with ctx.typing(): # Working indicator
 
-    # Cleanup from before if cleanup failed last time
-    try:
-        os.remove("ytdl-tmp.mp4")
-        os.remove("overlain-tmp.mp4")
-    except: pass
+        # Cleanup from before if cleanup failed last time
+        try:
+            os.remove("ytdl-tmp.mp4")
+            os.remove("overlain-tmp.mp4")
+        except: pass
 
-    # All arguments come in as strings, so we'll need to change that
-    startTime = float(startTime)
-    endTime = float(endTime)
+        # All arguments come in as strings, so we'll need to change that
+        startTime = float(startTime)
+        endTime = float(endTime)
 
-    # Limit length
-    if endTime - startTime > 30:
-        await ctx.send(f"{ctx.author.mention} Clip length is greater than thirty seconds. Please make the clip shorter.")
-    elif endTime - startTime <= 0:
-        await ctx.send(f"{ctx.author.mention} Clip length is less than or equal to 0 seconds. Please extend the clip.")
+        # Limit length
+        if endTime - startTime > 30:
+            await ctx.send(f"{ctx.author.mention} Clip length is greater than thirty seconds. Please make the clip shorter.")
+        elif endTime - startTime <= 0:
+            await ctx.send(f"{ctx.author.mention} Clip length is less than or equal to 0 seconds. Please extend the clip.")
 
-    # Download video
-    ytdlOptions = {
-        "format": "mp4",
-        "outtmpl": "ytdl-tmp.mp4" # Set the name of the file
-    }
-    with youtube_dl.YoutubeDL(ytdlOptions) as ytdl:
-        try: ytdl.download([link])
-        except:
-            await ctx.send(f"{ctx.author.mention} Link is incorrect. Please try another link.")
-            return 1
+        # Download video
+        ytdlOptions = {
+            "format": "mp4",
+            "outtmpl": "ytdl-tmp.mp4" # Set the name of the file
+        }
+        with youtube_dl.YoutubeDL(ytdlOptions) as ytdl:
+            try: ytdl.download([link])
+            except:
+                await ctx.send(f"{ctx.author.mention} Link is incorrect. Please try another link.")
+                return 1
 
-    # Render
-    result = rendering.renderWithTextOverlay("ytdl-tmp.mp4", "overlain-tmp.mp4", \
-        rendering.createTextOverlay(topText, bottomText), \
-        startTime, endTime)
+        # Render
+        result = rendering.renderWithTextOverlay("ytdl-tmp.mp4", "overlain-tmp.mp4", \
+            rendering.createTextOverlay(topText, bottomText), \
+            startTime, endTime)
 
-    # Send it
-    if result == 0:
-        await ctx.send(file=discord.File("overlain-tmp.mp4", filename=f"funny_clip_meme_from_{ctx.author}.mp4"))
-    elif result == 1:
-        await ctx.send(f"{ctx.author.mention} Clip length exceeds length of video. Please adjust clip restraints.")
-    else:
-        await ctx.send(f"{ctx.author.mention} Clip failed to render. Please try again.")
+        # Send it
+        if result == 0:
+            await ctx.send(file=discord.File("overlain-tmp.mp4", filename=f"funny_clip_meme_from_{ctx.author}.mp4"))
+        elif result == 1:
+            await ctx.send(f"{ctx.author.mention} Clip length exceeds length of video. Please adjust clip restraints.")
+        else:
+            await ctx.send(f"{ctx.author.mention} Clip failed to render. Please try again.")
 
-    # Cleanup
-    try:
-        os.remove("ytdl-tmp.mp4")
-        os.remove("overlain-tmp.mp4")
-    except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
+        # Cleanup
+        try:
+            os.remove("ytdl-tmp.mp4")
+            os.remove("overlain-tmp.mp4")
+        except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 
 try: bot.run(sys.argv[1]) # Start it UP
