@@ -143,16 +143,19 @@ async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
             os.remove("ytdl-tmp.mp4")
             os.remove("overlain-tmp.mp4")
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
-        
+
 # Audioji group
 @bot.group()
 async def audioji(ctx):
+    if os.exists(f"audioji/{ctx.guild.id}"): # Make sure the subfolder is init'd before starting
+        audioji.initSubfolder(ctx.guild)
     pass
 
 @audioji.command()
-async def add(ctx, *, content: audioji.addNew):
-    
-    
+async def add(ctx, name, link, clipStart, clipEnd):
+    async with ctx.typing():
+        audioji.addNew(ctx, name, link, clipStart, clipEnd) # ehhh could be better
+
 
 
 try: bot.run(sys.argv[1]) # Start it UP
