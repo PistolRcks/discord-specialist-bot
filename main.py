@@ -28,6 +28,7 @@ async def on_command_error(ctx, error):
     elif type(error) == commands.errors.MissingRequiredArgument:
         await ctx.send(f"you're missing some command arguments, {ctx.author.mention}")
     else:
+        await ctx.send(f"Error thrown! Tell the bot owner to check the logs.")
         print(f"Error `{error}` of type `{type(error)}` pushed!")
 
 
@@ -145,16 +146,21 @@ async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 # Audioji group
-@bot.group()
-async def audioji(ctx):
-    if os.exists(f"audioji/{ctx.guild.id}"): # Make sure the subfolder is init'd before starting
-        audioji.initSubfolder(ctx.guild)
+@bot.group(name="audioji")
+async def _audioji(ctx):
     pass
 
-@audioji.command()
-async def add(ctx, name, link, clipStart, clipEnd):
+async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before starting
+    print("Preinvoke!")
+    if not os.path.exists(f"audioji/{ctx.guild.id}"):
+        audioji.initSubfolder(ctx.guild)
+
+@_audioji.before_invoke(_audiojiPreinvoke)
+
+@_audioji.command(name="add")
+async def _add(ctx, name, link, clipStart, clipEnd):
     async with ctx.typing():
-        audioji.addNew(ctx, name, link, clipStart, clipEnd) # ehhh could be better
+        await audioji.addNew(ctx, name, link, clipStart, clipEnd) # ehhh could be better
 
 
 
