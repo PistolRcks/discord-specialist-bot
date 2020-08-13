@@ -8,6 +8,7 @@ from discord.errors import LoginFailure
 from PIL import Image
 import youtube_dl
 import rendering
+import audioji
 
 bot = commands.Bot(command_prefix="!")
 
@@ -142,6 +143,16 @@ async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
             os.remove("ytdl-tmp.mp4")
             os.remove("overlain-tmp.mp4")
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
+        
+# Audioji group
+@bot.group()
+async def audioji(ctx):
+    pass
+
+@audioji.command()
+async def add(ctx, *, content: audioji.addNew):
+    
+    
 
 
 try: bot.run(sys.argv[1]) # Start it UP
