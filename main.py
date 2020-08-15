@@ -1,6 +1,5 @@
 import sys
 import os
-from io import BytesIO
 import re
 import discord
 from discord.ext import commands
@@ -155,12 +154,17 @@ async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before sta
     if not os.path.exists(f"audioji/{ctx.guild.id}"):
         audioji.initSubfolder(ctx.guild)
 
-@_audioji.before_invoke(_audiojiPreinvoke)
+@_audioji.before_invoke(_audiojiPreinvoke) # this is really stupid and should affect the coruotine; kinda ruins the point of a decorator
 
 @_audioji.command(name="add")
 async def _add(ctx, name, link, clipStart, clipEnd):
     async with ctx.typing():
-        await audioji.addNew(ctx, name, link, clipStart, clipEnd) # ehhh could be better
+        await audioji.addNewAudioji(ctx, name, link, clipStart, clipEnd) # ehhh could be better
+
+@_audioji.command(name="play")
+async def _play(ctx, target):
+    async with ctx.typing():
+        await audioji.playAudioji(ctx, target)
 
 
 

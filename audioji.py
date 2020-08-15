@@ -1,6 +1,7 @@
 import os
 import json
 from time import ctime
+from asyncio import TimeoutError
 import discord
 from discord.ext import commands
 import youtube_dl
@@ -26,7 +27,21 @@ def initSubfolder(guild: discord.Guild):
     except OSError:
         print("[ERROR] File/folder creation error! Make sure the folder the bot is in has read/write permissions.")
 
-async def addNew(ctx, name, link, clipStart, clipEnd):
+async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
+    """ Adds a new audioji from a YouTube video, renders it to mp3, and writes metadata.
+
+    Parameters:
+        ctx (discord.Context): The context in which the command was invoked.
+        name (str): The name which to name the audioji.
+        link (str): The link with which to create the audio for the audioji.
+        clipStart (float): Indicates the beginning of the clip.
+        clipEnd (float): Indicates the end of the clip.
+
+    Returns:
+        An integer error code.
+        0 is OK.
+        1 is a youtube-dl failure.
+    """
     clipStart = float(clipStart)
     clipEnd = float(clipEnd)
     # Download the video
@@ -46,6 +61,7 @@ async def addNew(ctx, name, link, clipStart, clipEnd):
     print("[AUDIOJI] Extracting audio...")
     inputFile = ffmpeg.input("audio-tmp.mp4", ss=clipStart, to=clipEnd)
     output = ffmpeg.output(inputFile.audio, f"audioji/{ctx.guild.id}/{name}.mp3")
+    output = ffmpeg.overwrite_output(output) # Overwrite for better audioji editing 
     ffmpeg.run(output)
 
     # Remove tempfile
@@ -69,3 +85,29 @@ async def addNew(ctx, name, link, clipStart, clipEnd):
     print(f"[AUDIOJI] Successfully created audioji '{name}' in file 'audioji/{ctx.guild.id}/{name}.mp3'.")
 
     await ctx.send(f"Successfully created audioji '{name}'!")
+    return 0
+
+# Plays an audioji
+async def playAudioji(ctx, target):
+    channel = ctx.author.voice.channel # Invoked voice channel
+    client = ""
+    try:
+        client = await channel.connect()
+    except TimeoutError:
+        print("f[ERROR] Timed out while trying to connect to voice channel {channel.name}.")
+        await ctx.send("Timed out while trying to connect!")
+        return 1
+    except discord.ClientException:
+        if not channel == ctx.voice_client.channel: # Invoked voice channel vs actual voice channel
+            await ctx.voice_client.move_to(channel)
+            client = ctx.voice_client
+        else: # i.e. the currently connected channel is the invoked channel
+            client = ctx.voice_client
+    except:
+        print(f"[ERROR] Fatally failed to connect to voice channel {channel.name}.")
+        await ctx.send("Exceptionally failed to connect to a voice channel!")
+        return 2
+
+    audio = discord.FFmpegPCMAudio(f"audioji/{ctx.guild.id}/{target}.mp3")
+    client.play(audio)
+    # Client will disconnect after code execution. Don't worry.
