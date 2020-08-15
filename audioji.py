@@ -1,3 +1,4 @@
+# Discord bot audioji (audio soundclips) module
 import os
 import json
 from time import ctime
@@ -61,7 +62,7 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
     print("[AUDIOJI] Extracting audio...")
     inputFile = ffmpeg.input("audio-tmp.mp4", ss=clipStart, to=clipEnd)
     output = ffmpeg.output(inputFile.audio, f"audioji/{ctx.guild.id}/{name}.mp3")
-    output = ffmpeg.overwrite_output(output) # Overwrite for better audioji editing 
+    output = ffmpeg.overwrite_output(output) # Overwrite for better audioji editing
     ffmpeg.run(output)
 
     # Remove tempfile

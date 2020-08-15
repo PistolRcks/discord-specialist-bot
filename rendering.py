@@ -1,3 +1,4 @@
+# Discord bot video rendering module
 import math
 import os
 from PIL import Image, ImageFont, ImageDraw

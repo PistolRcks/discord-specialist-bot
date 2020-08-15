@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import json
 import discord
 from discord.ext import commands
 from discord.errors import LoginFailure
@@ -8,6 +9,7 @@ from PIL import Image
 import youtube_dl
 import rendering
 import audioji
+import helptext
 
 bot = commands.Bot(command_prefix="!")
 
@@ -25,14 +27,16 @@ async def on_command_error(ctx, error):
     if type(error) == commands.errors.ExpectedClosingQuoteError:
         await ctx.send(f"nice job with the quotation marks, {ctx.author.mention}")
     elif type(error) == commands.errors.MissingRequiredArgument:
-        await ctx.send(f"you're missing some command arguments, {ctx.author.mention}")
+        await ctx.send(f"You're missing some command arguments, {ctx.author.mention}.")
+    elif type(error) == commands.errors.CommandNotFound:
+        await ctx.send(f"The command you used doesn't exist! Check your spelling, {ctx.author.mention}.")
     else:
         await ctx.send(f"Error thrown! Tell the bot owner to check the logs.")
         print(f"Error `{error}` of type `{type(error)}` pushed!")
 
 
 # Just a test command
-@bot.command()
+@bot.command(description=helptext.help["smd"]["desc"], usage=helptext.formatUsage("smd"), help=helptext.formatHelptext("smd"))
 async def smd(ctx, user="self"):
     if user == "self": # If the user inputs nothing
         user = ctx.author.mention
@@ -47,7 +51,7 @@ async def smd(ctx, user="self"):
     await ctx.send(f"go fuck yourself {user}")
 
 # Create impact font text on a blank background
-@bot.command()
+@bot.command(description=helptext.help["impact"]["desc"], usage=helptext.formatUsage("impact"), help=helptext.formatHelptext("impact"))
 async def impact(ctx, topText, bottomText):
     async with ctx.typing(): # Working indicator
         # Make the image
@@ -66,7 +70,7 @@ async def impact(ctx, topText, bottomText):
             print("Image failed to save, so not sent.")
 
 # Creates the specialist meme and then sends it
-@bot.command()
+@bot.command(description=helptext.help["specialist"]["desc"], usage=helptext.formatUsage("specialist"), help=helptext.formatHelptext("specialist"))
 async def specialist(ctx, topText, bottomText):
     async with ctx.typing(): # Working indicator
         # Make sure it exists before screwing around
@@ -94,8 +98,8 @@ async def specialist(ctx, topText, bottomText):
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 # Adds impact font text to a Youtube video
-@bot.command()
-async def impact_video(ctx, topText, bottomText, link, startTime, endTime):
+@bot.command(description=helptext.help["impact_video"]["desc"], usage=helptext.formatUsage("impact_video"), help=helptext.formatHelptext("impact_video"))
+async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
     async with ctx.typing(): # Working indicator
 
         # Cleanup from before if cleanup failed last time
@@ -156,12 +160,12 @@ async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before sta
 
 @_audioji.before_invoke(_audiojiPreinvoke) # this is really stupid and should affect the coruotine; kinda ruins the point of a decorator
 
-@_audioji.command(name="add")
+@_audioji.command(name="add", description=helptext.help["audioji_add"]["desc"], usage=helptext.formatUsage("audioji_add"), help=helptext.formatHelptext("audioji_add"))
 async def _add(ctx, name, link, clipStart, clipEnd):
     async with ctx.typing():
         await audioji.addNewAudioji(ctx, name, link, clipStart, clipEnd) # ehhh could be better
 
-@_audioji.command(name="play")
+@_audioji.command(name="play", description=helptext.help["audioji_play"]["desc"], usage=helptext.formatUsage("audioji_play"), help=helptext.formatHelptext("audioji_play"))
 async def _play(ctx, target):
     async with ctx.typing():
         await audioji.playAudioji(ctx, target)
