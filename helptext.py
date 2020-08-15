@@ -109,6 +109,10 @@ help = {
                 "desc" : "The audioji to play. This is case-sensitive."
             }
         ]
+    },
+    "audioji_list" : {
+        "desc" : "Lists all audiojis.",
+        "args" : []
     }
 }
 

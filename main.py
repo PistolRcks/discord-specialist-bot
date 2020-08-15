@@ -154,7 +154,6 @@ async def _audioji(ctx):
     pass
 
 async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before starting
-    print("Preinvoke!")
     if not os.path.exists(f"audioji/{ctx.guild.id}"):
         audioji.initSubfolder(ctx.guild)
 
@@ -170,6 +169,25 @@ async def _play(ctx, target):
     async with ctx.typing():
         await audioji.playAudioji(ctx, target)
 
+@_audioji.command(name="list", description=helptext.help["audioji_play"]["desc"], usage="", help="")
+async def _list(ctx):
+    list = ""
+    audiojis = []
+    with open(f"audioji/{ctx.guild.id}/meta.json", "r") as f:
+        audiojis = json.load(f)
+    audiojis = audiojis["audiojis"] # Get the actual list
+
+    if len(audiojis) == 0: # If you ain't got none
+        await ctx.send("There are no audiojis! Get to making with `!audioji add`!")
+        return 1
+
+    # Make the list
+    list += f"There are {len(audiojis)} Audiojis: \n```\n" # No I'm not going to add an edgecase for one audioji (or maybe I will)
+    for name, details in audiojis.items():
+        list += f"\n'{name}', by {details['author']}"
+    list += f"\n```"
+
+    await ctx.send(list)
 
 
 try: bot.run(sys.argv[1]) # Start it UP
