@@ -36,7 +36,7 @@ async def on_command_error(ctx, error):
 
 
 # Just a test command
-@bot.command(description=helptext.help["smd"]["desc"], usage=helptext.formatUsage("smd"), help=helptext.formatHelptext("smd"))
+@bot.command(description=helptext.help["smd"]["desc"], usage=helptext.formatUsage("smd"), help=helptext.formatHelptext("smd"), brief=helptext.help["smd"]["desc"])
 async def smd(ctx, user="self"):
     if user == "self": # If the user inputs nothing
         user = ctx.author.mention
@@ -51,7 +51,7 @@ async def smd(ctx, user="self"):
     await ctx.send(f"go fuck yourself {user}")
 
 # Create impact font text on a blank background
-@bot.command(description=helptext.help["impact"]["desc"], usage=helptext.formatUsage("impact"), help=helptext.formatHelptext("impact"))
+@bot.command(description=helptext.help["impact"]["desc"], usage=helptext.formatUsage("impact"), help=helptext.formatHelptext("impact"), brief=helptext.help["impact"]["desc"])
 async def impact(ctx, topText, bottomText):
     async with ctx.typing(): # Working indicator
         # Make the image
@@ -70,7 +70,7 @@ async def impact(ctx, topText, bottomText):
             print("Image failed to save, so not sent.")
 
 # Creates the specialist meme and then sends it
-@bot.command(description=helptext.help["specialist"]["desc"], usage=helptext.formatUsage("specialist"), help=helptext.formatHelptext("specialist"))
+@bot.command(description=helptext.help["specialist"]["desc"], usage=helptext.formatUsage("specialist"), help=helptext.formatHelptext("specialist"), brief=helptext.help["specialist"]["desc"])
 async def specialist(ctx, topText, bottomText):
     async with ctx.typing(): # Working indicator
         # Make sure it exists before screwing around
@@ -98,7 +98,7 @@ async def specialist(ctx, topText, bottomText):
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 # Adds impact font text to a Youtube video
-@bot.command(description=helptext.help["impact_video"]["desc"], usage=helptext.formatUsage("impact_video"), help=helptext.formatHelptext("impact_video"))
+@bot.command(description=helptext.help["impact_video"]["desc"], usage=helptext.formatUsage("impact_video"), help=helptext.formatHelptext("impact_video"), brief=helptext.help["impact_video"]["desc"])
 async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
     async with ctx.typing(): # Working indicator
 
@@ -159,17 +159,17 @@ async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before sta
 
 @_audioji.before_invoke(_audiojiPreinvoke) # this is really stupid and should affect the coruotine; kinda ruins the point of a decorator
 
-@_audioji.command(name="add", description=helptext.help["audioji_add"]["desc"], usage=helptext.formatUsage("audioji_add"), help=helptext.formatHelptext("audioji_add"))
+@_audioji.command(name="add", description=helptext.help["audioji_add"]["desc"], usage=helptext.formatUsage("audioji_add"), help=helptext.formatHelptext("audioji_add"), brief=helptext.help["audioji_add"]["desc"])
 async def _add(ctx, name, link, clipStart, clipEnd):
     async with ctx.typing():
         await audioji.addNewAudioji(ctx, name, link, clipStart, clipEnd) # ehhh could be better
 
-@_audioji.command(name="play", description=helptext.help["audioji_play"]["desc"], usage=helptext.formatUsage("audioji_play"), help=helptext.formatHelptext("audioji_play"))
+@_audioji.command(name="play", description=helptext.help["audioji_play"]["desc"], usage=helptext.formatUsage("audioji_play"), help=helptext.formatHelptext("audioji_play"), brief=helptext.help["audioji_play"]["desc"])
 async def _play(ctx, target):
     async with ctx.typing():
         await audioji.playAudioji(ctx, target)
 
-@_audioji.command(name="list", description=helptext.help["audioji_play"]["desc"], usage="", help="")
+@_audioji.command(name="list", description=helptext.help["audioji_list"]["desc"], usage="", help="", brief=helptext.help["audioji_list"]["desc"])
 async def _list(ctx):
     list = ""
     audiojis = []
