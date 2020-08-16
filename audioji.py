@@ -90,7 +90,12 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
 
 # Plays an audioji
 async def playAudioji(ctx, target):
-    channel = ctx.author.voice.channel # Invoked voice channel
+    channel = ""
+    try:
+        channel = ctx.author.voice.channel # Invoked voice channel
+    except AttributeError: # If not connected
+        await ctx.send(f"You are not in a voice channel! {ctx.author.mention}, please join a voice channel before executing the command.")
+
     client = ""
     try:
         client = await channel.connect()
