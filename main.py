@@ -189,6 +189,11 @@ async def _list(ctx):
 
     await ctx.send(list)
 
+# Shows audioji metadata
+@_audioji.command(name="info", description=helptext.help["audioji_info"]["desc"], usage=helptext.formatUsage("audioji_info"), help=helptext.formatHelptext("audioji_info"), brief=helptext.help["audioji_info"]["desc"])
+async def _info(ctx, target):
+    await ctx.send(embed=audioji.formatAudiojiEmbed(ctx.guild, target))
+
 
 try: bot.run(sys.argv[1]) # Start it UP
 except LoginFailure: print("Invalid bot token!\nPlease make sure you're using the correct token, and use quotes if you have to.")

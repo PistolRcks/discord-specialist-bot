@@ -117,3 +117,18 @@ async def playAudioji(ctx, target):
     audio = discord.FFmpegPCMAudio(f"audioji/{ctx.guild.id}/{target}.mp3")
     client.play(audio)
     # Client will disconnect after code execution. Don't worry.
+
+# Makes an embed to show a target audioji's metadata
+def formatAudiojiEmbed(guild, target):
+    data = ""
+    with open(f"audioji/{guild.id}/meta.json") as f:
+        data = json.load(f)
+    audioji = data["audiojis"][target]
+    embed = discord.Embed(title=target, type="rich", description="This is the information for this audioji.", color=discord.Colour.blurple())
+    (
+        embed.add_field(name="Author", value=audioji["author"])
+        .add_field(name="Clip Length", value=f"{audioji['length']} sec")
+        .add_field(name="Source", value=audioji["source"])
+        .add_field(name="Creation Date", value=audioji["creationDate"])
+    )
+    return embed
