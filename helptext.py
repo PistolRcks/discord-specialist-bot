@@ -113,6 +113,16 @@ help = {
     "audioji_list" : {
         "desc" : "Lists all audiojis.",
         "args" : []
+    },
+    "audioji_info" : {
+        "desc" : "Shows the metadata for an audioji.",
+        "args" : [
+            {
+                "name" : "audioji",
+                "type" : "Audioji",
+                "desc" : "The audioji from which to show metadata."
+            }
+        ]
     }
 }
 
