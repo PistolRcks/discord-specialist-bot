@@ -148,6 +148,35 @@ async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
             os.remove("overlain-tmp.mp4")
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
+@bot.command()
+async def word_occurrances(ctx, user, word, limit=1000, channel=None):
+    async with ctx.typing():
+        limit = int(limit)
+        # If a channel is not specified, use the current context
+        if not channel:
+            channel = ctx.channel
+        else:
+            try: # Match the mention with an actual channel
+                channelStr = channel
+                channel = [x for x in ctx.guild.channels if re.search(str(x.id), channel)][0]
+            except IndexError: # If we couldn't find a channel
+                print(f"[ERROR] Invalid channel {channelStr} passed!")
+                await ctx.send("Invalid channel passed! Make sure to mention the channel with a hashtag.")
+                return 1
+
+        print(f"Getting the past {limit} messages from {channel.name}...")
+        # Get all messages, extract message content, and only use ones created by a certain user
+        messages = await channel.history(limit=limit).flatten()
+        messages = [message.content for message in messages if ctx.author == message.author]
+
+        print(f"Counting {len(messages)} messages...")
+        # Count messages
+        count = 0
+        for message in messages:
+            if word in message: count += 1
+    await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages in the channel `{channel}`.")
+
+
 # Audioji group
 @bot.group(name="audioji")
 async def _audioji(ctx):
@@ -157,7 +186,14 @@ async def _audiojiPreinvoke(ctx): # Make sure the subfolder is init'd before sta
     if not os.path.exists(f"audioji/{ctx.guild.id}"):
         audioji.initSubfolder(ctx.guild)
 
+# TODO: Doesn't disconnect, but doesn't push error?
+async def _audiojiPostinvoke(ctx): # Get out of voice chat if in it
+    try: await ctx.voice_client.disconnect()
+    except AttributeError: pass
+    except: print("[ERROR] Other audioji postivnoke error!")
+
 @_audioji.before_invoke(_audiojiPreinvoke) # this is really stupid and should affect the coruotine; kinda ruins the point of a decorator
+#@_audioji.after_invoke(_audiojiPostinvoke)
 
 @_audioji.command(name="add", description=helptext.help["audioji_add"]["desc"], usage=helptext.formatUsage("audioji_add"), help=helptext.formatHelptext("audioji_add"), brief=helptext.help["audioji_add"]["desc"])
 async def _add(ctx, name, link, clipStart, clipEnd):
