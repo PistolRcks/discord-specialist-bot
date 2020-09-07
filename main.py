@@ -149,12 +149,15 @@ async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 @bot.command()
-async def word_occurrances(ctx, user, word, limit=1000, channel=None):
+async def word_occurrances(ctx, user, word, channel=None, limit=1000):
     async with ctx.typing():
         limit = int(limit)
+
         # If a channel is not specified, use the current context
         if not channel:
             channel = ctx.channel
+        elif channel == "all": # Use for later, make sure we don't catch it now
+            pass
         else:
             try: # Match the mention with an actual channel
                 channelStr = channel
@@ -164,17 +167,50 @@ async def word_occurrances(ctx, user, word, limit=1000, channel=None):
                 await ctx.send("Invalid channel passed! Make sure to mention the channel with a hashtag.")
                 return 1
 
-        print(f"Getting the past {limit} messages from {channel.name}...")
-        # Get all messages, extract message content, and only use ones created by a certain user
-        messages = await channel.history(limit=limit).flatten()
-        messages = [message.content for message in messages if ctx.author == message.author]
+        # Main func
+        async def _countMessages(channel):
+            print(f"Getting the past {limit} messages from {channel.name}...")
+            # Get all messages, extract message content, and only use ones created by a certain user
+            try:
+                messages = await channel.history(limit=limit).flatten()
+                messages = [message.content for message in messages if ctx.author == message.author]
+            except discord.Forbidden:
+                print(f"[ERROR] Bot doesn't have the correct permissions to access channel {channel.name}!")
+                raise discord.Forbidden(403, "Bot doesn't have correct permissions to access the channel!")
+                return 0
 
-        print(f"Counting {len(messages)} messages...")
-        # Count messages
-        count = 0
-        for message in messages:
-            if word in message: count += 1
-    await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages in the channel `{channel}`.")
+            print(f"Counting {len(messages)} messages...")
+            # Count messages
+            count = 0
+            for message in messages:
+                count += len(re.findall(word), message, flags=re.I) # Add all occurrances of the word in the message to the count (case insensitive)
+
+            return count
+
+
+        if channel == "all":
+            channels = [x for x in ctx.guild.channels if type(x) == discord.TextChannel]
+            print(f"Getting the past {limit} messages from ALL {len(ctx.guild.channels)} channels.\nWARNING: This may take a long time!")
+            count = 0
+            forbiddenChannels = []
+            for channel in channels:
+                try:
+                    count += await _countMessages(channel)
+                except:
+                    forbiddenChannels += channel
+            await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages within all channels.")
+            if len(forbiddenChannels):
+                errorMessage = "The bot could not access the following channels, so the channels were not counted: \n```"
+                for forbiddenChannel in forbiddenChannels:
+                    errorMessage += f"\n{forbiddenChannel.name}"
+                errorMessage += "\n```"
+                await ctx.send(errorMessage)
+        else:
+            try:
+                count = await _countMessages(channel)
+                await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages in the channel `{channel}`.")
+            except discord.Forbidden:
+                await ctx.send("The bot doesn't have permissions to post to this channel! Make sure it has the \"Read Message History\" permissions before trying to connect to this channel again.")
 
 
 # Audioji group
