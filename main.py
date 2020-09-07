@@ -171,6 +171,7 @@ async def word_occurrances(ctx, user, word, channel=None, limit=1000):
         async def _countMessages(channel):
             print(f"Getting the past {limit} messages from {channel.name}...")
             # Get all messages, extract message content, and only use ones created by a certain user
+            messages = []
             try:
                 messages = await channel.history(limit=limit).flatten()
                 messages = [message.content for message in messages if ctx.author == message.author]
@@ -183,8 +184,8 @@ async def word_occurrances(ctx, user, word, channel=None, limit=1000):
             # Count messages
             count = 0
             for message in messages:
-                count += len(re.findall(word), message, flags=re.I) # Add all occurrances of the word in the message to the count (case insensitive)
-
+                count += len(re.findall(word, message, flags=re.I)) # Add all occurrances of the word in the message to the count (case insensitive)
+            print(count)
             return count
 
 
