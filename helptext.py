@@ -123,6 +123,33 @@ help = {
                 "desc" : "The audioji from which to show metadata."
             }
         ]
+    },
+    "word_occurrences" : {
+        "desc" : "Gives the amount of times a word occurs in a channel by a user.",
+        "args" : [
+            {
+                "name" : "user",
+                "type" : "User Mention",
+                "desc" : "The user from whom to count word occurrences."
+            },
+            {
+                "name" : "word",
+                "type" : "String",
+                "desc" : "The word for which to search." 
+            },
+            {
+                "name" : "channel",
+                "type" : "Channel Mention",
+                "desc" : "The channel from which to search. Defaults to the current channel. Use `all` to search in all channels.",
+                "optional" : True
+            },
+            {
+                "name" : "limit",
+                "type" : "Integer",
+                "desc" : "The amount of posts from which to choose (per channel). Default is 1000.",
+                "optional" : True
+            }
+        ]
     }
 }
 

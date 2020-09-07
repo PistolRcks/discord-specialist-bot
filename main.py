@@ -22,17 +22,17 @@ async def on_ready():
 async def on_message(message):
     print(f"<#{message.channel}> {message.author}: {message.content}") # Debugging
 
-@bot.listen()
-async def on_command_error(ctx, error):
-    if type(error) == commands.errors.ExpectedClosingQuoteError:
-        await ctx.send(f"nice job with the quotation marks, {ctx.author.mention}")
-    elif type(error) == commands.errors.MissingRequiredArgument:
-        await ctx.send(f"You're missing some command arguments, {ctx.author.mention}.")
-    elif type(error) == commands.errors.CommandNotFound:
-        await ctx.send(f"The command you used doesn't exist! Check your spelling, {ctx.author.mention}.")
-    else:
-        await ctx.send(f"Error thrown! Tell the bot owner to check the logs.")
-        print(f"Error `{error}` of type `{type(error)}` pushed!")
+#@bot.listen()
+#async def on_command_error(ctx, error):
+#    if type(error) == commands.errors.ExpectedClosingQuoteError:
+#        await ctx.send(f"nice job with the quotation marks, {ctx.author.mention}")
+#    elif type(error) == commands.errors.MissingRequiredArgument:
+#        await ctx.send(f"You're missing some command arguments, {ctx.author.mention}.")
+#    elif type(error) == commands.errors.CommandNotFound:
+#        await ctx.send(f"The command you used doesn't exist! Check your spelling, {ctx.author.mention}.")
+#    else:
+#        await ctx.send(f"Error thrown! Tell the bot owner to check the logs.")
+#        print(f"Error `{error}` of type `{type(error)}` pushed!")
 
 
 # Just a test command
@@ -148,7 +148,7 @@ async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
             os.remove("overlain-tmp.mp4")
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
-@bot.command()
+@bot.command(description=helptext.help["word_occurrences"]["desc"], usage=helptext.formatUsage("word_occurrences"), help=helptext.formatHelptext("word_occurrences"), brief=helptext.help["word_occurrences"]["desc"])
 async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     async with ctx.typing():
         limit = int(limit)
@@ -177,7 +177,7 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
                 messages = [message.content for message in messages if ctx.author == message.author]
             except discord.Forbidden:
                 print(f"[ERROR] Bot doesn't have the correct permissions to access channel {channel.name}!")
-                raise discord.Forbidden(403, "Bot doesn't have correct permissions to access the channel!")
+                raise Exception() # lol idk how to use discord.Forbidden
                 return 0
 
             print(f"Counting {len(messages)} messages...")
@@ -197,8 +197,8 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
             for channel in channels:
                 try:
                     count += await _countMessages(channel)
-                except:
-                    forbiddenChannels += channel
+                except Exception:
+                    forbiddenChannels.append(channel)
             await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages within all channels.")
             if len(forbiddenChannels):
                 errorMessage = "The bot could not access the following channels, so the channels were not counted: \n```"
@@ -210,7 +210,7 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
             try:
                 count = await _countMessages(channel)
                 await ctx.send(f"{user} has used the word `{word}` ***{count} times*** within the past {limit} messages in the channel `{channel}`.")
-            except discord.Forbidden:
+            except Exception:
                 await ctx.send("The bot doesn't have permissions to post to this channel! Make sure it has the \"Read Message History\" permissions before trying to connect to this channel again.")
 
 
