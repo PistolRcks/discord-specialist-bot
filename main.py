@@ -149,7 +149,7 @@ async def impact_video(ctx, link, topText, bottomText, startTime, endTime):
         except OSError: print("Cleanup failed or temporary file did not exist in the first place.")
 
 @bot.command()
-async def word_occurrances(ctx, user, word, channel=None, limit=1000):
+async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     async with ctx.typing():
         limit = int(limit)
 
