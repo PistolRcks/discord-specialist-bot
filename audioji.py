@@ -95,7 +95,7 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
 # Plays an audioji
 async def playAudioji(ctx, target):
     # Check and see if there actually is an audioji of that name
-    if not os.path.isfile(f"audioji/{ctx.guild.id}/{target}"):
+    if not os.path.isfile(f"audioji/{ctx.guild.id}/{target}.mp3"):
         aprint(f"[ERROR] Audioji \"{target}.mp3\" for the guild \"{ctx.guild.id}\" doesn't exist.")
         await ctx.send("The audioji that you requested doesn't exist!\n" +
             "Find another audioji using `!audioji list` or make a new one using `!audioji add`!")
