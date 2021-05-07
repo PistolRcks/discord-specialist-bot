@@ -220,6 +220,9 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
                     + "mention the channel with a hashtag.")
                 return 1
 
+        # Cleanse the user mention string (mention has a ! while author.mention doesn't)
+        user = re.sub(r"<@!", "<@", user)
+
         # Main func
         async def _countMessages(channel):
             print(f"Getting the past {limit} messages from {channel.name}...")
@@ -228,12 +231,11 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
             messages = []
             try:
                 messages = await channel.history(limit=limit).flatten()
-                # TODO: FIXME
                 messages = [message.content for message in messages
                     if user == message.author.mention]
             except discord.Forbidden:
-                print(f"[ERROR] Bot doesn't have the correct permissions "
-                    + "to access channel {channel.name}!")
+                print("[ERROR] Bot doesn't have the correct permissions "
+                    + f"to access channel {channel.name}!")
                 raise Exception() # lol idk how to use discord.Forbidden
                 return 0
 
@@ -250,6 +252,9 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
 
 
         if channel == "all":
+            await ctx.send(f"Checking the past {limit} messages from ALL "
+                + "channels! This may take some time, so take a seat and "
+                + "relax!")
             channels = [x for x in ctx.guild.channels
                 if type(x) == discord.TextChannel]
             print(f"Getting the past {limit} messages from ALL "
@@ -353,7 +358,7 @@ async def _list(ctx):
     list += f"There are {len(audiojis)} Audiojis: \n```\n"
     for name, details in audiojis.items():
         list += f"\n'{name}', by {details['author']}"
-    list += f"\n```"
+    list += "\n```"
 
     await ctx.send(list)
 
