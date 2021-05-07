@@ -1,15 +1,29 @@
 # Discord bot helptext module
 
+# Holds the help text for all commands
 help = {
     "smd" : { # Example
-        "desc" : "Tells the user to fuck off.", # Description of the command's behavior
-        "nb" : "Without a mention, it will tell you to fuck off.", # Additional "nota bene" text to add at the end (optional)
-        "args" : [ # Positional arguments (in order of position) in a list
+        # Description of the command's behavior
+        "desc" : "Tells the user to fuck off.",
+
+        # Additional "nota bene" text to add at the end (optional)
+        "nb" : "Without a mention, it will tell you to fuck off.",
+
+        # Positional arguments (in order of position) in a list
+        "args" : [
             {
-                "name" : "user", # Name of the argument
-                "type" : "Username with discriminator, Mention", # Datatype required of the argument
-                "desc" : "User to tell to fuck off.", # Description of the argument's use
-                "optional" : True # Whether the argument is optional or not (optional, default is False)
+                # Name of the argument
+                "name" : "user",
+
+                # Datatype required of the argument
+                "type" : "Username with discriminator, Mention",
+
+                # Description of the argument's use
+                "desc" : "User to tell to fuck off.",
+
+                # Whether the argument is optional or not (optional, default is
+                # False)
+                "optional" : True
             }
         ]
     },
@@ -30,7 +44,8 @@ help = {
         ]
     },
     "specialist" : {
-        "desc" : "Creates a video of the P4 protagonist dancing over the song 'specialist' with Impact font text overlain.",
+        "desc" : "Creates a video of the P4 protagonist dancing over the "
+            + "song 'specialist' with Impact font text overlain.",
         "args" : [
             {
                 "name" : "topText",
@@ -65,7 +80,8 @@ help = {
             {
                 "name" : "clipStart",
                 "type" : "Float",
-                "desc" : "The time (in seconds) signifying the start of the clip."
+                "desc" : "The time (in seconds) signifying the start of "
+                    + "the clip."
             },
             {
                 "name" : "clipEnd",
@@ -81,7 +97,9 @@ help = {
             {
                 "name" : "name",
                 "type" : "String",
-                "desc" : "The name of the audioji you are creating. If you use the name of an existing audioji, it will be overwritten. This is case-sensitive."
+                "desc" : "The name of the audioji you are creating. If you "
+                    + "use the name of an existing audioji, it will be "
+                    + "overwritten. This is case-sensitive."
             },
             {
                 "name" : "link",
@@ -91,7 +109,8 @@ help = {
             {
                 "name" : "clipStart",
                 "type" : "Float",
-                "desc" : "The time (in seconds) signifying the start of the clip."
+                "desc" : "The time (in seconds) signifying the start of the "
+                    + "clip."
             },
             {
                 "name" : "clipEnd",
@@ -125,7 +144,8 @@ help = {
         ]
     },
     "word_occurrences" : {
-        "desc" : "Gives the amount of times a word occurs in a channel by a user.",
+        "desc" : "Gives the amount of times a word occurs in a channel by a "
+            + "user.",
         "args" : [
             {
                 "name" : "user",
@@ -135,18 +155,20 @@ help = {
             {
                 "name" : "word",
                 "type" : "String",
-                "desc" : "The word for which to search." 
+                "desc" : "The word for which to search."
             },
             {
                 "name" : "channel",
                 "type" : "Channel Mention",
-                "desc" : "The channel from which to search. Defaults to the current channel. Use `all` to search in all channels.",
+                "desc" : "The channel from which to search. Defaults to the "
+                    + "current channel. Use `all` to search in all channels.",
                 "optional" : True
             },
             {
                 "name" : "limit",
                 "type" : "Integer",
-                "desc" : "The amount of posts from which to choose (per channel). Default is 1000.",
+                "desc" : "The amount of posts from which to choose (per "
+                    + "channel). Default is 1000.",
                 "optional" : True
             }
         ]
@@ -178,7 +200,10 @@ def formatHelptext(command):
         string += f"\n\nNB: {help[command]['nb']}"
     except: pass
 
-    string += f"\n\u200c" # The indents break if we don't have a character non-indented on the last line, so we'll use the character ZERO WIDTH NON-JOINER to make a line
+    string += f"\n\u200c"
+    # The indents break if we don't have a character non-indented on the last
+    # line, so we'll use the character ZERO WIDTH NON-JOINER to make a line
+
     # by the way this is the most fucking stupid shit i've ever seen
 
     return string

@@ -3,7 +3,8 @@ import math
 import os
 from PIL import Image, ImageFont, ImageDraw
 import ffmpeg
-import cv2 # FIXME: Literally just for video metadata, should be using something else
+import cv2 # FIXME: Literally just for video metadata, should be using
+           # something else
 
 # Constant declarations
 SIZE = (720,720)
@@ -12,7 +13,8 @@ BORDER_MARGINS = (20,20)
 
 # Creates the text overlay and returns it as bytes
 def createTextOverlay(topText, bottomText, fontSize=100):
-    image = Image.new("RGBA", SIZE, (0,0,0,0)) # Initialize a new image with a transparent background
+    image = Image.new("RGBA", SIZE, (0,0,0,0)) # Initialize a new image with a
+                                               # transparent background
     impact = ImageFont.truetype("impact.ttf", fontSize)
     draw = ImageDraw.Draw(image, "RGBA")
 
@@ -24,8 +26,10 @@ def createTextOverlay(topText, bottomText, fontSize=100):
     # Adjust the size of the font to fit within video
     topSize = draw.textsize(topText, font=impact)
     if topSize[0] > SIZE[0] - BORDER_MARGINS[0]*2:
-        # Good ol' algebra and cross-multiplication (basically the ratio between fontsize and textwidth should remain the same)
-        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0])) / topSize[0])
+        # Good ol' algebra and cross-multiplication (basically the ratio
+        # between fontsize and textwidth should remain the same)
+        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0]))
+            / topSize[0])
         impact = ImageFont.truetype("impact.ttf", newFontSize)
         topSize = draw.textsize(topText, font=impact)
         print(newFontSize)
@@ -33,28 +37,34 @@ def createTextOverlay(topText, bottomText, fontSize=100):
     # Do the same for bottom text
     bottomSize = draw.textsize(bottomText, font=impact)
     if bottomSize[0] > SIZE[0] - BORDER_MARGINS[0]*2:
-        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0])) / bottomSize[0])
+        newFontSize = math.floor((fontSize * (SIZE[0] - BORDER_MARGINS[0]))
+            / bottomSize[0])
         impact = ImageFont.truetype("impact.ttf", newFontSize)
         topSize = draw.textsize(topText, font=impact)
         bottomSize = draw.textsize(bottomText, font=impact)
         print(newFontSize)
 
-    draw.text((SIZE[0]/2 - topSize[0]/2, BORDER_MARGINS[1]), topText, font=impact)
-    draw.text((SIZE[0]/2 - bottomSize[0]/2, SIZE[1] - BORDER_MARGINS[1] - bottomSize[1]), bottomText, font=impact)
-    #image.show() # debugging
+    draw.text((SIZE[0]/2 - topSize[0]/2, BORDER_MARGINS[1]), topText,
+        font=impact)
+    draw.text((SIZE[0]/2 - bottomSize[0]/2, SIZE[1] - BORDER_MARGINS[1]
+        - bottomSize[1]), bottomText, font=impact)
 
     return image.tobytes()
 
 
 def renderWithTextOverlay(videoFP, outputFP, textOverlay, inTime, outTime):
-    """ Renders a video with the specified text overlay, within the specified timeframe
+    """ Renders a video with the specified text overlay, within the specified
+        timeframe
 
     Parameters:
-        videoFP (str): String of the filepath which holds the specified video file.
+        videoFP (str): String of the filepath which holds the specified video
+            file.
         outputFP (str): String of the filepath to which to write.
-        textOverlay (bytes): Raw bytes data of the text overlay to use (should be ccreated with `createTextOverlay()`)
+        textOverlay (bytes): Raw bytes data of the text overlay to use (should
+            be ccreated with `createTextOverlay()`)
         inTime (float): Point in the video from which to trim (in seconds)
-        outTime (float): Point in the video from which to stop trimming (in seconds)
+        outTime (float): Point in the video from which to stop trimming (in
+            seconds)
 
     Returns:
         An error code in the form of an integer.
@@ -73,7 +83,8 @@ def renderWithTextOverlay(videoFP, outputFP, textOverlay, inTime, outTime):
 
     # Catch video length errors
     if inTime < 0 or outTime > videoLength or inTime >= outTime:
-        print("Selected parameters exceed video length or are impossible to perform! Stopping.")
+        print("Selected parameters exceed video length or are impossible "
+            + "to perform! Stopping.")
         return 1
 
     # Render the text overlay
@@ -84,7 +95,8 @@ def renderWithTextOverlay(videoFP, outputFP, textOverlay, inTime, outTime):
         print("Image failed to save!")
         return 2
 
-    # Render (also I can't use the nicer looking fluent version because fuck you)
+    # Render (also I can't use the nicer looking fluent version because fuck
+    # you)
     videoFile = ffmpeg.input(videoFP, ss=inTime, to=outTime)
     overlayFile = ffmpeg.input("img-tmp.png")
 
@@ -100,7 +112,7 @@ def renderWithTextOverlay(videoFP, outputFP, textOverlay, inTime, outTime):
 
     return 0
 
-
+# Just for testing
 if __name__ == '__main__':
     topText = input("Input toptext: ")
     bottomText = input("Input bottomtext: ")
