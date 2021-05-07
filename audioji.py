@@ -24,8 +24,8 @@ def initSubfolder(guild: discord.Guild):
         with open(f"audioji/{guild.id}/meta.json", "w") as f: # Add a comment
             encoder = json.JSONEncoder(indent=4)
             f.write(encoder.encode({
-                "_guildInfo" : f"Metadata for audiojis for the Discord "
-                    + "server {guild.name} (ID: {guild.id})",
+                "_guildInfo" : "Metadata for audiojis for the Discord "
+                    + f"server {guild.name} (ID: {guild.id})",
                 "audiojis" : {}
             }))
     except IOError:
@@ -119,7 +119,7 @@ async def playAudioji(ctx, target):
     try:
         channel = ctx.author.voice.channel # Invoked voice channel
     except AttributeError: # If not connected
-        await ctx.send(f"You are not in a voice channel!"
+        await ctx.send("You are not in a voice channel! "
             + f"{ctx.author.mention}, please join a voice channel before "
             + "executing the command.")
 
@@ -128,7 +128,7 @@ async def playAudioji(ctx, target):
     try:
         client = await channel.connect()
     except TimeoutError:
-        aprint(f"[ERROR] Timed out while trying to connect to voice"
+        aprint("[ERROR] Timed out while trying to connect to voice"
             + f"channel {channel.name}.")
         await ctx.send("Timed out while trying to connect!")
         return 2
@@ -147,8 +147,8 @@ async def playAudioji(ctx, target):
             + "Your bot owner needs to update the dependencies for this bot!")
         return 3
     except Exception as e: # Fallthrough
-        aprint(f"[ERROR] Fatally failed to connect to voice channel "
-            + "{channel.name}.\nStack Trace:")
+        aprint("[ERROR] Fatally failed to connect to voice channel "
+            + f"{channel.name}.\nStack Trace:")
         traceback.print_tb(e.__traceback__)
         await ctx.send("Exceptionally failed to connect to a voice channel!")
         return 4

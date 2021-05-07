@@ -200,7 +200,7 @@ def formatHelptext(command):
         string += f"\n\nNB: {help[command]['nb']}"
     except: pass
 
-    string += f"\n\u200c"
+    string += "\n\u200c"
     # The indents break if we don't have a character non-indented on the last
     # line, so we'll use the character ZERO WIDTH NON-JOINER to make a line
 
