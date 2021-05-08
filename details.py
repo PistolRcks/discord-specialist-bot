@@ -15,7 +15,7 @@ details = {
 
         # Positional arguments (in order of position) in a list (previously "args")
         # NB: These are passed as kwargs to their underlying functions, so they should
-        # be the same name as the parameters for those functions. 
+        # be the same name as the parameters for those functions.
         "options" : [
             create_option(
                 name="user", # Name of the argument
@@ -184,7 +184,7 @@ details = {
                 name="limit",
                 description="The amount of posts from which to choose (per "
                     + "channel). Default is 1000.",
-                option_type=OptionType.USER,
+                option_type=OptionType.INTEGER,
                 required=False
             )
         ]

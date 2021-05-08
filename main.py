@@ -209,6 +209,10 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
 async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     await ctx.defer()
 
+    # FIXME: Slash commands return users and channels not as mentions, but by strings
+    print(f"user: {user}")
+    print(f"channel: {channel}")
+
     limit = int(limit)
 
     # If a channel is not specified, use the current context
