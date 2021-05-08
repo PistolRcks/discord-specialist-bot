@@ -123,6 +123,7 @@ async def playAudioji(ctx, target):
             + f"{ctx.author.mention}, please join a voice channel before "
             + "executing the command.")
 
+
     # Attempt to connect
     client = ""
     try:
@@ -133,14 +134,12 @@ async def playAudioji(ctx, target):
         await ctx.send("Timed out while trying to connect!")
         return 2
     except discord.ClientException:
-        # FIXME: AttributeError: 'SlashContext' object has no attribute 'voice_client'
-        # Find substitute
-        if not channel == ctx.voice_client.channel: # Invoked voice channel vs
+        if not channel == ctx.guild.voice_client.channel: # Invoked voice channel vs
                                                     # actual voice channel
-            await ctx.voice_client.move_to(channel)
-            client = ctx.voice_client
+            await ctx.guild.voice_client.move_to(channel)
+            client = ctx.guild.voice_client
         else: # i.e. the currently connected channel is the invoked channel
-            client = ctx.voice_client
+            client = ctx.guild.voice_client
     except RuntimeError as e: # Whenever a dependency is not installed
         aprint("PyNaCl or some other dependency is probably not "
             + "installed.\nStack Trace:")
@@ -157,7 +156,7 @@ async def playAudioji(ctx, target):
 
     audio = discord.FFmpegPCMAudio(f"audioji/{ctx.guild.id}/{target}.mp3")
     client.play(audio)
-    # Client will disconnect after code execution. Don't worry.
+    return 0
 
 # Makes an embed to show a target audioji's metadata
 def formatAudiojiEmbed(guild, target):
