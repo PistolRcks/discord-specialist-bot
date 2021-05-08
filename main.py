@@ -343,8 +343,8 @@ async def _add(ctx, name, link, clipStart, clipEnd):
     options=details["audioji_play"]["options"],
     guild_ids=guild_ids
 )
-async def _play(ctx, target):
-    await audioji.playAudioji(ctx, target)
+async def _play(ctx, name):
+    await audioji.playAudioji(ctx, name)
 
 @slash.subcommand(
     base="audioji",
@@ -384,8 +384,8 @@ async def _list(ctx):
     options=details["audioji_info"]["options"],
     guild_ids=guild_ids
 )
-async def _info(ctx, target):
-    await ctx.send(embed=audioji.formatAudiojiEmbed(ctx.guild, target))
+async def _info(ctx, name):
+    await ctx.send(embed=audioji.formatAudiojiEmbed(ctx.guild, name))
 
 
 try: bot.run(sys.argv[1]) # Start it UP

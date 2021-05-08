@@ -133,6 +133,8 @@ async def playAudioji(ctx, target):
         await ctx.send("Timed out while trying to connect!")
         return 2
     except discord.ClientException:
+        # FIXME: AttributeError: 'SlashContext' object has no attribute 'voice_client'
+        # Find substitute
         if not channel == ctx.voice_client.channel: # Invoked voice channel vs
                                                     # actual voice channel
             await ctx.voice_client.move_to(channel)
