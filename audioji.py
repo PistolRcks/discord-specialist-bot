@@ -156,7 +156,7 @@ async def playAudioji(ctx, target):
 
     audio = discord.FFmpegPCMAudio(f"audioji/{ctx.guild.id}/{target}.mp3")
     try:
-        await ctx.send(f"Successfully played audioji {target}.", hidden=True)
+        await ctx.send(f"Successfully played audioji `{target}`.", hidden=True)
         client.play(audio)
     except discord.ClientException: # If there is already something playing, parry it
         client.stop()

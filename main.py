@@ -209,10 +209,6 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
 async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     await ctx.defer()
 
-    # FIXME: Slash commands return users and channels not as mentions, but by strings
-    print(f"user: {user}")
-    print(f"channel: {channel}")
-
     limit = int(limit)
 
     # If a channel is not specified, use the current context
@@ -220,19 +216,11 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
         channel = ctx.channel
     elif channel == "all": # Use for later, make sure we don't catch it now
         pass
-    else:
-        try: # Match the mention with an actual channel
-            channelStr = channel
-            channel = [x for x in ctx.guild.channels
-                if re.search(str(x.id), channel)][0]
-        except IndexError: # If we couldn't find a channel
-            print(f"[ERROR] Invalid channel {channelStr} passed!")
-            await ctx.send("Invalid channel passed! Make sure to "
-                + "mention the channel with a hashtag.")
-            return 1
-
-    # Cleanse the user mention string (mention has a ! while author.mention doesn't)
-    user = re.sub(r"<@!", "<@", user)
+    elif not type(channel) is discord.TextChannel: # If the wrong channel type was passed
+        print(f"[ERROR] Non-text channel {channel.name} passed!")
+        await ctx.send("Non-text channel passed! Make sure to "
+            + "choose a text channel.")
+        return 1
 
     # Main func
     async def _countMessages(channel):
@@ -243,7 +231,7 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
         try:
             messages = await channel.history(limit=limit).flatten()
             messages = [message.content for message in messages
-                if user == message.author.mention]
+                if user == message.author]
         except discord.Forbidden:
             print("[ERROR] Bot doesn't have the correct permissions "
                 + f"to access channel {channel.name}!")
@@ -278,7 +266,7 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
                 count += await _countMessages(channel)
             except Exception:
                 forbiddenChannels.append(channel)
-        await ctx.send(f"{user} has used the word `{word}` "
+        await ctx.send(f"{user.mention} has used the word `{word}` "
             + f"***{count} times*** within the past {limit} "
             + "messages within all channels.")
         if len(forbiddenChannels):
@@ -291,9 +279,9 @@ async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     else:
         try:
             count = await _countMessages(channel)
-            await ctx.send(f"{user} has used the word `{word}`"
+            await ctx.send(f"{user.mention} has used the word `{word}` "
                 + f"***{count} times*** within the past {limit} messages "
-                + f"in the channel `{channel}`.")
+                + f"in the channel {channel.mention}.")
         except Exception:
             await ctx.send("The bot doesn't have permissions to post "
                 + "to this channel! Make sure it has the \"Read Message "
