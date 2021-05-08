@@ -155,7 +155,13 @@ async def playAudioji(ctx, target):
         return 4
 
     audio = discord.FFmpegPCMAudio(f"audioji/{ctx.guild.id}/{target}.mp3")
-    client.play(audio)
+    try:
+        await ctx.send(f"Successfully played audioji {target}.", hidden=True)
+        client.play(audio)
+    except discord.ClientException: # If there is already something playing, parry it
+        client.stop()
+        await ctx.send("Parried!")
+        client.play(audio)
     return 0
 
 # Makes an embed to show a target audioji's metadata
