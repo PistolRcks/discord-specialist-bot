@@ -51,17 +51,8 @@ async def on_message(message):
 )
 async def smd(ctx, user="self"):
     if user == "self": # If the user inputs nothing
-        user = ctx.author.mention
-    elif not re.match(r"<@", user): # If the user is not directly mentioned
-                                    # (with an @)
-        try:
-            user = [member.mention for member in ctx.guild.members
-                if member.name == re.sub(r"(?=#).+$", "", user)
-                and member.discriminator == re.sub(r"^.+(?<=#)", "", user)][0]
-        except:
-            ctx.send("Could not find user! Try again.")
-            return 1
-    await ctx.send(f"go fuck yourself {user}")
+        user = ctx.author
+    await ctx.send(f"go fuck yourself {user.mention}")
 
 # Create impact font text on a blank background
 @slash.slash(
