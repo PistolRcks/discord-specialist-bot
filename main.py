@@ -13,10 +13,10 @@ import youtube_dl
 import rendering
 import audioji
 from details import details
+import util
 
 bot = commands.Bot(command_prefix="!")
 slash = SlashCommand(bot, sync_commands=True)
-guild_ids = []    # TODO: Dynamically generate guild ids
 
 # Setup listeners
 @bot.listen()
@@ -65,15 +65,16 @@ async def impact(ctx, top_text, bottom_text):
     # Make the image
     rawImage = rendering.createTextOverlay(top_text, bottom_text, fontSize=25)
     image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
+    tempFP = createTempFP(ctx, "png")
 
     # Save the image
     print("Saving image...")
     try:
-        image.save("img-tmp.png")
+        image.save(tempFP)
         print("Image saved correctly. Posting...")
-        await ctx.send(file=discord.File("img-tmp.png",
+        await ctx.send(file=discord.File(tempFP,
             filename=f"le_epic_maymay_from_{ctx.author}.jpeg"))
-        os.remove("img-tmp.png")
+        os.remove(tempFP)
         print("Removed temporary file.")
     except OSError:
         print("Image failed to save, so not sent.")
@@ -88,19 +89,20 @@ async def impact(ctx, top_text, bottom_text):
 async def specialist(ctx, top_text, bottom_text):
     await ctx.defer() # Working indicator
 
+    tempFP = createTempFP(ctx, "mp4")
+
+    # FIXME: Cleanup from last time using new temp system
+
     # Make sure it exists before screwing around
     if not os.path.exists("specialist.mp4"):
         print("Specialist not found! Make sure it's named "
             + "`specialist.mp4`.")
-        pass
-    # Cleanup if command failed last time
-    try: os.remove("specialist-tmp.mp4")
-    except: pass
+        return
 
     # Render it
     result = rendering.renderWithTextOverlay(
         "specialist.mp4",
-        "specialist-tmp.mp4",
+        tempFP,
         rendering.createTextOverlay(top_text, bottom_text),
         14, 25
     )
@@ -108,7 +110,7 @@ async def specialist(ctx, top_text, bottom_text):
     # Send it
     if result == 0:
         await ctx.send(
-            file=discord.File("specialist-tmp.mp4",
+            file=discord.File(tempFP,
             filename=f"funny_specialist_meme_from_{ctx.author}.mp4")
         )
     else:
@@ -117,7 +119,7 @@ async def specialist(ctx, top_text, bottom_text):
 
     # Cleanup
     try:
-        os.remove("specialist-tmp.mp4")
+        os.remove(tempFP)
     except OSError:
         print("Cleanup failed or temporary file did not exist in the "
             + "first place.")
@@ -131,12 +133,18 @@ async def specialist(ctx, top_text, bottom_text):
 )
 async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
     await ctx.defer() # Working indicator
+    
+    ytTempFP = createTempFP(ctx, "impact-dl.mp4")
+    overTempFP = createTempFP(ctx, "impact-over.mp4")
+
+
+    # FIXME: Cleanup from last time using new temp system
 
     # Cleanup from before if cleanup failed last time
-    try:
-        os.remove("ytdl-tmp.mp4")
-        os.remove("overlain-tmp.mp4")
-    except: pass
+    #try:
+    #    os.remove("ytdl-tmp.mp4")
+    #    os.remove("overlain-tmp.mp4")
+    #except: pass
 
     # All arguments come in as strings, so we'll need to change that
     start_time = float(start_time)
@@ -153,7 +161,7 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
     # Download video
     ytdlOptions = {
         "format": "mp4",
-        "outtmpl": "ytdl-tmp.mp4" # Set the name of the file
+        "outtmpl": ytTempFP # Set the name of the file
     }
     with youtube_dl.YoutubeDL(ytdlOptions) as ytdl:
         try: ytdl.download([link])
@@ -164,8 +172,8 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
 
     # Render
     result = rendering.renderWithTextOverlay(
-        "ytdl-tmp.mp4",
-        "overlain-tmp.mp4",
+        ytTempFP,
+        overTempFP,
         rendering.createTextOverlay(top_text, bottom_text),
         start_time, end_time
     )
@@ -173,7 +181,7 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
     # Send it
     if result == 0:
         await ctx.send(
-            file=discord.File("overlain-tmp.mp4",
+            file=discord.File(overTempFP,
             filename=f"funny_clip_meme_from_{ctx.author}.mp4")
         )
     elif result == 1:
@@ -185,8 +193,8 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
 
     # Cleanup
     try:
-        os.remove("ytdl-tmp.mp4")
-        os.remove("overlain-tmp.mp4")
+        os.remove(ytTempFP)
+        os.remove(overTempFP)
     except OSError:
         print("Cleanup failed or temporary file did not exist in the "
             + "first place.")

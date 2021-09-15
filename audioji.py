@@ -61,10 +61,12 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
     clipEnd = float(clipEnd)
 
     # Download the video
+    tempFP = createTempFP(ctx, ".mp4")
+
     aprint("Downloading video...")
     ytdlOptions = {
         "format": "mp4",
-        "outtmpl": "audio-tmp.mp4" # Set the name of the file
+        "outtmpl": tempFP # Set the name of the file
     }
     with youtube_dl.YoutubeDL(ytdlOptions) as ytdl:
         try: ytdl.download([link])
@@ -75,7 +77,7 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
 
     # Extract the audio (as .mp3) and render to correct folder
     aprint("Extracting audio...")
-    inputFile = ffmpeg.input("audio-tmp.mp4", ss=clipStart, to=clipEnd)
+    inputFile = ffmpeg.input(tempFP, ss=clipStart, to=clipEnd)
     output = ffmpeg.output(inputFile.audio, f"audioji/{ctx.guild.id}"
         + f"/{name}.mp3")
     output = ffmpeg.overwrite_output(output) # Overwrite for better
@@ -83,7 +85,7 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
     ffmpeg.run(output)
 
     # Remove tempfile
-    os.remove("audio-tmp.mp4")
+    os.remove(tempFP)
 
     # Write metadata to folder
     aprint("Writing metadata...")
