@@ -14,6 +14,7 @@ import rendering
 import audioji
 from details import details
 import util
+import player
 
 bot = commands.Bot(command_prefix="!")
 slash = SlashCommand(bot, sync_commands=True)
@@ -311,7 +312,7 @@ async def _audiojiPostinvoke(ctx): # Get out of voice chat if in it
     description=details["audioji_add"]["description"],
     options=details["audioji_add"]["options"],
 )
-async def _add(ctx, name, link, clipStart, clipEnd):
+async def audioji_add(ctx, name, link, clipStart, clipEnd):
     await ctx.defer()
     # ehhh could be better
     await audioji.addNewAudioji(ctx, name, link, clipStart, clipEnd)
@@ -330,7 +331,7 @@ async def _add(ctx, name, link, clipStart, clipEnd):
     description=details["audioji_play"]["description"],
     options=details["audioji_play"]["options"],
 )
-async def _play(ctx, name):
+async def audioji_play(ctx, name):
     await audioji.playAudioji(ctx, name)
 
 @slash.subcommand(
@@ -340,7 +341,7 @@ async def _play(ctx, name):
     description=details["audioji_list"]["description"],
     options=details["audioji_list"]["options"],
 )
-async def _list(ctx):
+async def audioji_list(ctx):
     list = ""
     audiojis = []
     with open(f"audioji/{ctx.guild.id}/meta.json", "r") as f:
@@ -368,9 +369,20 @@ async def _list(ctx):
     description=details["audioji_info"]["description"],
     options=details["audioji_info"]["options"],
 )
-async def _info(ctx, name):
+async def audioji_info(ctx, name):
     await ctx.send(embed=audioji.formatAudiojiEmbed(ctx.guild, name))
 
+
+### Player Commands ###
+@slash.subcommand(
+    base="player",
+    base_desc="Plays Youtube videos in your voice chat.",
+    name=details["player_play"]["name"],
+    description=details["player_play"]["description"],
+    options=details["player_play"]["options"],
+)
+async def player_play(ctx, link):
+    await player.playVideo(ctx, link)
 
 try: bot.run(sys.argv[1]) # Start it UP
 except LoginFailure:

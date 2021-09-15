@@ -188,7 +188,19 @@ details = {
                 required=False
             )
         ]
-    }
+    },
+    "player_play" : {
+        "name" : "play",
+        "description" : "Plays a YouTube video.",
+        "options" : [              
+            create_option(
+                name="link",
+                description="The link or ID of the YouTube video you wish to play.",
+                option_type=OptionType.STRING,
+                required=True
+            )
+        ]
+    },
 }
 
 # Formats the usagetext for a command (in the decorator, not the helptext)
