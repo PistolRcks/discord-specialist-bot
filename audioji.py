@@ -13,6 +13,7 @@ import youtube_dl
 import ffmpeg
 
 from details import details
+import util
 
 # Adding a wrapper to print to prepend, makes things look nicer
 def aprint(str):
@@ -61,7 +62,7 @@ async def addNewAudioji(ctx, name, link, clipStart, clipEnd):
     clipEnd = float(clipEnd)
 
     # Download the video
-    tempFP = createTempFP(ctx, ".mp4")
+    tempFP = util.createTempFP(ctx, ".mp4")
 
     aprint("Downloading video...")
     ytdlOptions = {

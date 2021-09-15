@@ -47,7 +47,6 @@ async def on_message(message):
     name=details["smd"]["name"],
     description=details["smd"]["description"],
     options=details["smd"]["options"],
-    guild_ids=guild_ids
 )
 async def smd(ctx, user="self"):
     if user == "self": # If the user inputs nothing
@@ -59,13 +58,12 @@ async def smd(ctx, user="self"):
     name=details["impact"]["name"],
     description=details["impact"]["description"],
     options=details["impact"]["options"],
-    guild_ids=guild_ids
 )
 async def impact(ctx, top_text, bottom_text):
     # Make the image
     rawImage = rendering.createTextOverlay(top_text, bottom_text, fontSize=25)
     image = Image.frombytes("RGBA", rendering.SIZE, rawImage)
-    tempFP = createTempFP(ctx, "png")
+    tempFP = util.createTempFP(ctx, "png")
 
     # Save the image
     print("Saving image...")
@@ -84,12 +82,11 @@ async def impact(ctx, top_text, bottom_text):
     name=details["specialist"]["name"],
     description=details["specialist"]["description"],
     options=details["specialist"]["options"],
-    guild_ids=guild_ids
 )
 async def specialist(ctx, top_text, bottom_text):
     await ctx.defer() # Working indicator
 
-    tempFP = createTempFP(ctx, "mp4")
+    tempFP = util.createTempFP(ctx, "mp4")
 
     # FIXME: Cleanup from last time using new temp system
 
@@ -129,13 +126,12 @@ async def specialist(ctx, top_text, bottom_text):
     name=details["impact_video"]["name"],
     description=details["impact_video"]["description"],
     options=details["impact_video"]["options"],
-    guild_ids=guild_ids
 )
-async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
+async def impact_video(ctx, link, top_text, bottom_text, clip_start, clip_end):
     await ctx.defer() # Working indicator
     
-    ytTempFP = createTempFP(ctx, "impact-dl.mp4")
-    overTempFP = createTempFP(ctx, "impact-over.mp4")
+    ytTempFP = util.createTempFP(ctx, "impact-dl.mp4")
+    overTempFP = util.createTempFP(ctx, "impact-over.mp4")
 
 
     # FIXME: Cleanup from last time using new temp system
@@ -147,8 +143,8 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
     #except: pass
 
     # All arguments come in as strings, so we'll need to change that
-    start_time = float(start_time)
-    end_time = float(end_time)
+    start_time = float(clip_start)
+    end_time = float(clip_end)
 
     # Limit length
     if end_time - start_time > 30:
@@ -203,7 +199,6 @@ async def impact_video(ctx, link, top_text, bottom_text, start_time, end_time):
     name=details["word_occurrences"]["name"],
     description=details["word_occurrences"]["description"],
     options=details["word_occurrences"]["options"],
-    guild_ids=guild_ids
 )
 async def word_occurrences(ctx, user, word, channel=None, limit=1000):
     await ctx.defer()
@@ -315,7 +310,6 @@ async def _audiojiPostinvoke(ctx): # Get out of voice chat if in it
     name=details["audioji_add"]["name"],
     description=details["audioji_add"]["description"],
     options=details["audioji_add"]["options"],
-    guild_ids=guild_ids
 )
 async def _add(ctx, name, link, clipStart, clipEnd):
     await ctx.defer()
@@ -335,7 +329,6 @@ async def _add(ctx, name, link, clipStart, clipEnd):
     name=details["audioji_play"]["name"],
     description=details["audioji_play"]["description"],
     options=details["audioji_play"]["options"],
-    guild_ids=guild_ids
 )
 async def _play(ctx, name):
     await audioji.playAudioji(ctx, name)
@@ -346,7 +339,6 @@ async def _play(ctx, name):
     name=details["audioji_list"]["name"],
     description=details["audioji_list"]["description"],
     options=details["audioji_list"]["options"],
-    guild_ids=guild_ids
 )
 async def _list(ctx):
     list = ""
@@ -375,7 +367,6 @@ async def _list(ctx):
     name=details["audioji_info"]["name"],
     description=details["audioji_info"]["description"],
     options=details["audioji_info"]["options"],
-    guild_ids=guild_ids
 )
 async def _info(ctx, name):
     await ctx.send(embed=audioji.formatAudiojiEmbed(ctx.guild, name))

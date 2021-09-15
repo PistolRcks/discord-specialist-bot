@@ -21,4 +21,4 @@ def createTempFP(ctx, ext):
         - The file extension
     """
 
-    return f"tmp/{ctx.command.name[:4]}-{ctx.guild.id}-{str(time())[-8:]}.tmp.{ext}"
+    return f"tmp/{ctx.command[:4]}-{ctx.guild.id}-{str(time())[-8:]}.tmp.{ext}"
