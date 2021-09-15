@@ -3,3 +3,4 @@ __pycache/*
 *.mp4
 audioji
 audioji/*
+tmp/*/*

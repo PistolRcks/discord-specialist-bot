@@ -4,9 +4,15 @@ import json
 from time import ctime
 from asyncio import TimeoutError
 import traceback
+
 import discord
+import discord_slash
+from discord_slash.utils.manage_commands import create_option, create_choice
+from discord_slash.model import SlashCommandOptionType as OptionType
 import youtube_dl
 import ffmpeg
+
+from details import details
 
 # Adding a wrapper to print to prepend, makes things look nicer
 def aprint(str):

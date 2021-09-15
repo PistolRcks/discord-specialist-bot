@@ -16,7 +16,7 @@ from details import details
 
 bot = commands.Bot(command_prefix="!")
 slash = SlashCommand(bot, sync_commands=True)
-guild_ids = [582318526912790531]    # TODO: Dynamically generate guild ids
+guild_ids = []    # TODO: Dynamically generate guild ids
 
 # Setup listeners
 @bot.listen()
@@ -314,6 +314,13 @@ async def _add(ctx, name, link, clipStart, clipEnd):
     # ehhh could be better
     await audioji.addNewAudioji(ctx, name, link, clipStart, clipEnd)
 
+    # Update audioji commands
+    print("Forcing update of audioji commands!")
+    for id in guild_ids:
+        print(f"Updating audioji commands for guild {id}...")
+        audioji.updateAudiojiSlashCommand(_play, "play", slash, id)
+        audioji.updateAudiojiSlashCommand(_info, "play", slash, id)
+
 @slash.subcommand(
     base="audioji",
     base_desc="Plays audio clips in your voice chat.",
@@ -354,7 +361,6 @@ async def _list(ctx):
 
     await ctx.send(list)
 
-# Shows audioji metadata
 @slash.subcommand(
     base="audioji",
     base_desc="Plays audio clips in your voice chat.",
