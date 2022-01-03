@@ -1,5 +1,7 @@
 # Discord Specialist Bot
+
 *A multifunctional media bot*
+
 ---
 
 ## What is this?
